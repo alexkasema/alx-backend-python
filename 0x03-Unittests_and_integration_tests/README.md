@@ -4,3 +4,22 @@ Unit Testing is a type of software testing where individual software components 
 
 ## Integration Testing:
 Integration testing is the process of testing the interface between two software units or modules. Its focus is on determining the correctness of the interface. Integration testing aims to expose faults in the interaction between integrated units. Once all the modules have been unit tested, integration testing is performed. 
+## test_utils.py
+Parameterize a unit test
+Create a TestAccessNestedMap class that inherits from unittest.TestCase.
+
+Implement the TestAccessNestedMap.test_access_nested_map method to test that the method returns what it is supposed to.
+
+Decorate the method with @parameterized.expand to test the function for following inputs:
+
+nested_map={"a": 1}, path=("a",)
+nested_map={"a": {"b": 2}}, path=("a",)
+nested_map={"a": {"b": 2}}, path=("a", "b")
+For each of these inputs, test with assertEqual that the function returns the expected result.
+## test_utils.py
+Implement TestAccessNestedMap.test_access_nested_map_exception. Use the assertRaises context manager to test that a KeyError is raised for the following inputs (use @parameterized.expand):
+
+nested_map={}, path=("a",)
+nested_map={"a": 1}, path=("a", "b")
+Also make sure that the exception message is as expected.
+
