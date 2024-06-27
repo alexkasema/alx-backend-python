@@ -32,3 +32,17 @@ test_url="http://holberton.io", test_payload={"payload": False}
 Test that the mocked get method was called exactly once (per input) with test_url as argument.
 
 Test that the output of get_json is equal to test_payload.
+## test_utils.py
+Implement the TestMemoize(unittest.TestCase) class with a test_memoize method.
+
+Inside test_memoize, define following class
+
+class TestClass:
+
+    def a_method(self):
+        return 42
+
+    @memoize
+    def a_property(self):
+        return self.a_method()
+Use unittest.mock.patch to mock a_method. Test that when calling a_property twice, the correct result is returned but a_method is only called once using assert_called_once.
