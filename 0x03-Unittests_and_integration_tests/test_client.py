@@ -135,7 +135,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
                 return Mock(**{'json.return_value': url_payload[url]})
             return HTTPError
 
-        cls.get_patcher = patch("request.get", side_effect=get_payload)
+        cls.get_patcher = patch("requests.get", side_effect=get_payload)
         cls.get_patcher.start()
 
     @classmethod
