@@ -6,7 +6,10 @@ import unittest
 from client import GithubOrgClient
 from parameterized import parameterized, parameterized_class
 from typing import Dict
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, Mock, patch, PropertyMock
+from fixtures import TEST_PAYLOAD
+
+from requests import HTTPError
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -106,3 +109,36 @@ class TestGithubOrgClient(unittest.TestCase):
         client = GithubOrgClient("google")
         client_license = client.has_license(repo, key)
         self.assertEqual(client_license, expected)
+
+
+@parameterized_class([
+    {
+        "org_payload": TEST_PAYLOAD[0][0],
+        "repos_paylaod": TEST_PAYLOAD[0][1],
+        "expected_repos": TEST_PAYLOAD[0][2],
+        "apache2_repos": TEST_PAYLOAD[0][3],
+    },
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """ Integration test on GithubOrgClient methods """
+    @classmethod
+    def setUpClass(cls) -> None:
+        """ Set up initial fixtures for every test """
+        url_payload = {
+            'https://api.github.com/orgs/google': cls.org_payload,
+            'https://api.github.com/orgs/google/repos': cls.repos_payload,
+        }
+
+        def get_payload(url):
+            """ get the payload from the given url """
+            if url in url_payload:
+                return Mock(**{'json.return_value': url_payload[url]})
+            return HTTPError
+
+        cls.get_patcher = patch("request.get", side_effect=get_payload)
+        cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """ Remove the fixures set up after running the test """
+        cls.get_patcher.stop()
