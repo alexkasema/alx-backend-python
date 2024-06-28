@@ -38,3 +38,61 @@ class TestGithubOrgClient(unittest.TestCase):
                 GithubOrgClient('google')._public_repos_url,
                 'https://api.github.com/orgs/google/repos',
             )
+
+    @patch("client.get_json")
+    def test_public_repos(self, mock_test_json: MagicMock) -> None:
+        """ test the public_repos method in GithubOrgClient class """
+        test_payload = {
+            'repos_url': 'https://api.github.com/orgs/google/repos',
+            'repos': [
+                {
+                    "id": 1936771,
+                    "node_id": "MDEwOlJlcG9zaXRvcnkxOTM2Nzcx",
+                    "name": "truth",
+                    "full_name": "google/truth",
+                    "private": False,
+                    "owner": {
+                        "login": "google",
+                        "id": 1342004,
+                        "type": "Organization",
+                    },
+                    "description": "Fluent assertions for Java and Android",
+                    "fork": False,
+                    "forks": 255,
+                    "created_at": "2011-06-22T18:55:12Z",
+                    "updated_at": "2024-06-28T01:46:16Z",
+                },
+                {
+                    "id": 3248507,
+                    "node_id": "MDEwOlJlcG9zaXRvcnkzMjQ4NTA3",
+                    "name": "ruby-openid-apps-discovery",
+                    "full_name": "google/ruby-openid-apps-discovery",
+                    "private": False,
+                    "owner": {
+                        "login": "google",
+                        "id": 1342004,
+                        "type": "Organization",
+                    },
+                    "description": None,
+                    "fork": False,
+                    "forks": 23,
+                    "created_at": "2012-01-23T17:09:03Z",
+                    "updated_at": "2023-03-29T17:10:50Z",
+                },
+            ]
+        }
+        mock_test_json.return_value = test_payload['repos']
+        with patch(
+                "client.GithubOrgClient._public_repos_url",
+                new_callable=PropertyMock,
+                ) as mock_public_repos_url:
+            mock_public_repos_url.return_value = test_payload["repos_url"]
+            self.assertEqual(
+                GithubOrgClient("google").public_repos(),
+                [
+                    "truth",
+                    "ruby-openid-apps-discovery",
+                ],
+            )
+            mock_public_repos_url.assert_called_once()
+        mock_test_json.assert_called_once()
